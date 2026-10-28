@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>包裝校稿系統</title>
+<style>
+:root{--g1:#c5cdf0;--g2:#c9dcf2;--g3:#c3e8dd;--card:rgba(255,255,255,.55);--cardb:rgba(255,255,255,.85);--ink:#1b1d29;--dim:#5d6377;--line:rgba(255,255,255,.8);--acc:#5b4fd6;--accbg:rgba(120,110,230,.16);--ok:#1f7a55;--okbg:#cdeee0;--warn:#9a5a10;--warnbg:#fde3c6;--err:#b3261e;--errbg:#f9d6d6;--inp:rgba(255,255,255,.72);--img:rgba(255,255,255,.4);--btn:#14151c;--btntx:#fff;--shadow:0 8px 32px rgba(90,100,160,.18);--t1:#dff1da;--t2:#d9e8f8;--t3:#e2dcf6;--t4:#fde6cf;--bl1:rgba(190,200,255,.75);--bl2:rgba(190,235,215,.75);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--g1:#1b1f3a;--g2:#1c2a46;--g3:#16342f;--card:rgba(32,36,58,.58);--cardb:rgba(255,255,255,.16);--ink:#eef0f8;--dim:#a2a9c2;--line:rgba(255,255,255,.14);--acc:#a79dff;--accbg:rgba(167,157,255,.2);--ok:#7fe0b4;--okbg:rgba(80,200,150,.2);--warn:#f5c27a;--warnbg:rgba(245,194,122,.18);--err:#ff9a92;--errbg:rgba(255,120,110,.18);--inp:rgba(255,255,255,.08);--img:rgba(255,255,255,.06);--btn:#f2f2f8;--btntx:#14151c;--shadow:0 8px 32px rgba(0,0,0,.35);--t1:rgba(120,200,120,.18);--t2:rgba(120,170,240,.2);--t3:rgba(167,157,255,.22);--t4:rgba(245,170,110,.2);--bl1:rgba(90,80,200,.35);--bl2:rgba(60,170,140,.3)}}
+:root[data-theme="dark"]{--g1:#1b1f3a;--g2:#1c2a46;--g3:#16342f;--card:rgba(32,36,58,.58);--cardb:rgba(255,255,255,.16);--ink:#eef0f8;--dim:#a2a9c2;--line:rgba(255,255,255,.14);--acc:#a79dff;--accbg:rgba(167,157,255,.2);--ok:#7fe0b4;--okbg:rgba(80,200,150,.2);--warn:#f5c27a;--warnbg:rgba(245,194,122,.18);--err:#ff9a92;--errbg:rgba(255,120,110,.18);--inp:rgba(255,255,255,.08);--img:rgba(255,255,255,.06);--btn:#f2f2f8;--btntx:#14151c;--shadow:0 8px 32px rgba(0,0,0,.35);--t1:rgba(120,200,120,.18);--t2:rgba(120,170,240,.2);--t3:rgba(167,157,255,.22);--t4:rgba(245,170,110,.2);--bl1:rgba(90,80,200,.35);--bl2:rgba(60,170,140,.3)}
+*{box-sizing:border-box}
+html{min-height:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font:15px/1.6 system-ui,-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;background:radial-gradient(60% 50% at 12% 8%,var(--bl1),transparent 70%),radial-gradient(55% 50% at 92% 92%,var(--bl2),transparent 70%),linear-gradient(135deg,var(--g1),var(--g2) 50%,var(--g3));background-attachment:fixed}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 120px}
+h1{font-size:23px;margin:0;letter-spacing:.3px}
+.sub{color:var(--dim);font-size:14px;margin:2px 0 14px}
+.card,.mh,.rv{background:var(--card);border:1px solid var(--cardb);border-radius:22px;box-shadow:var(--shadow);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%)}
+@supports not (backdrop-filter:blur(1px)){:root{--card:rgba(255,255,255,.85)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--card:rgba(32,36,58,.9)}}}
+.card{padding:18px;margin-bottom:16px}
+h2{font-size:17px;margin:0 0 10px}
+button,.btn{font:inherit;color:var(--ink);background:rgba(255,255,255,.35);border:1px solid var(--ink);border-radius:999px;padding:5px 16px;cursor:pointer;text-decoration:none;display:inline-block;transition:background .15s,transform .05s}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button,:root:not([data-theme="light"]) .btn{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.55)}}
+button:hover,.btn:hover{background:var(--accbg)}
+button:active{transform:scale(.98)}
+.pri{background:var(--btn)!important;border-color:var(--btn)!important;color:var(--btntx)!important}
+.pri:hover{filter:brightness(1.2)}
+.dng{color:var(--err);border-color:var(--err)}
+button:disabled{opacity:.5;cursor:default}
+input[type=text],input[type=date],select,textarea{font:inherit;color:var(--ink);background:var(--inp);border:1px solid var(--cardb);border-radius:14px;padding:7px 12px;min-width:0;width:100%}
+textarea{resize:vertical}
+label.f{display:block;font-size:14px;color:var(--dim);margin-bottom:10px}
+label.f>span{display:block;margin-bottom:3px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{color:var(--dim);font-weight:600;font-size:13px;white-space:nowrap}
+.badge{display:inline-block;padding:1px 12px;border-radius:999px;font-size:13px;white-space:nowrap;margin-right:4px}
+.todo{background:var(--accbg);color:var(--acc)}.doing{background:var(--warnbg);color:var(--warn)}.done{background:var(--okbg);color:var(--ok)}.bad{background:var(--errbg);color:var(--err)}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.note{font-size:13px;color:var(--dim)}
+.err{color:var(--err);font-size:14px;min-height:20px}
+.err:not(:empty){position:sticky;top:8px;z-index:12;background:var(--errbg);border:1px solid var(--err);border-radius:14px;padding:8px 14px;margin-bottom:10px}
+.rv.act{border:2px solid var(--acc)}
+.hint{background:var(--accbg);border-radius:16px;padding:8px 14px;font-size:14px;margin-bottom:14px}
+.types{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:640px){.types{grid-template-columns:repeat(2,1fr)}}
+.types button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:26px 8px;font-size:17px;border-radius:22px;border:1px solid var(--cardb);box-shadow:var(--shadow);background:linear-gradient(150deg,rgba(255,255,255,.65),var(--t))}
+.types button:nth-child(1){--t:var(--t1)}.types button:nth-child(2){--t:var(--t2)}.types button:nth-child(3){--t:var(--t3)}.types button:nth-child(4){--t:var(--t4)}
+.types button:hover{background:linear-gradient(150deg,rgba(255,255,255,.8),var(--t));transform:translateY(-2px)}
+.types button i{font-style:normal;font-size:38px;line-height:1.1}
+.drop{border:2px dashed var(--ink);border-color:color-mix(in srgb,var(--ink) 35%,transparent);border-radius:20px;padding:16px;text-align:center;background:rgba(255,255,255,.25);margin-bottom:10px}
+.drop.on{border-color:var(--acc);background:var(--accbg)}
+.pv{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;justify-content:center}
+.pv figure{margin:0;position:relative;width:110px}
+.pv img{width:110px;height:90px;object-fit:cover;border-radius:14px;border:1px solid var(--cardb);display:block}
+.pv button{position:absolute;top:2px;right:2px;padding:0 8px;line-height:1.5}
+.stepper{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:6px 0}
+.stepper span{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--dim)}
+.stepper span::before{content:attr(data-n);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1px solid var(--dim);font-size:12px}
+.stepper span.ok{color:var(--ok)}.stepper span.ok::before{content:"✓";background:var(--okbg);border-color:var(--ok)}
+.stepper span.cur{color:var(--btntx);font-weight:600}.stepper span.cur::before{background:var(--btn);color:var(--btntx);border-color:var(--btn)}
+.stepper span.cur{color:var(--ink)}
+.stepper i{width:28px;height:2px;background:var(--line);margin:0 6px}
+.mh{margin-bottom:14px;overflow:hidden}
+.mh>div.h{padding:10px 16px;background:rgba(255,255,255,.3);font-weight:600;border-bottom:1px solid var(--line)}
+.detail{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.detail{grid-template-columns:1fr}}
+.sticky{position:sticky;top:12px}
+#viewer{height:min(70vh,640px);overflow:auto;background:var(--img);border:1px solid var(--cardb);border-radius:18px;cursor:grab;touch-action:pan-x pan-y;margin-top:10px}
+#viewer img{display:block;max-width:none;margin:0 auto;user-select:none;-webkit-user-drag:none}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.thumbs button[aria-pressed=true]{background:var(--btn);border-color:var(--btn);color:var(--btntx)}
+.rv{margin-bottom:14px;overflow:hidden}
+.rv>header{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 16px;background:rgba(255,255,255,.3);border-bottom:1px solid var(--line)}
+.rv .it{display:grid;grid-template-columns:2.2em minmax(7em,1.2fr) auto minmax(0,1.5fr);gap:8px;align-items:center;padding:7px 16px;border-bottom:1px solid var(--line)}
+.rv .it:last-child{border-bottom:0}
+.rv .it .no{color:var(--dim);font-size:13px}
+@media (max-width:560px){.rv .it{grid-template-columns:2em 1fr auto}.rv .it input[type=text]{grid-column:2/-1}}
+.rv .it input[type=text]{padding:3px 10px}
+.rv .it input[type=checkbox]{accent-color:var(--ok)}
+.seg{display:inline-flex}.seg button{padding:2px 12px;border-radius:0;font-size:13px}.seg button:first-child{border-radius:999px 0 0 999px}.seg button:last-child{border-radius:0 999px 999px 0;margin-left:-1px}
+.seg button.on1{background:var(--okbg);color:var(--ok);border-color:var(--ok);font-weight:600}.seg button.on2{background:var(--errbg);color:var(--err);border-color:var(--err);font-weight:600}
+.stat h3{margin:18px 0 6px;font-size:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.log{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--dim)}
+.warnbox{background:var(--errbg);border:1px solid var(--err);border-radius:16px;padding:10px 14px;margin-bottom:14px}
+.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));width:min(560px,calc(100% - 24px));display:flex;gap:4px;padding:6px;background:var(--card);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);border:1px solid var(--cardb);border-radius:28px;box-shadow:var(--shadow);z-index:10}
+.tabs button{flex:1;border:0;border-radius:22px;background:transparent;padding:6px 2px 4px;display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--dim);position:relative}
+.tabs button i{font-style:normal;font-size:22px;line-height:1.2}
+.tabs button[aria-current=page]{background:var(--btn);color:var(--btntx);font-weight:600}
+.nb{position:absolute;top:2px;left:calc(50% + 8px);background:var(--err);color:#fff;border-radius:999px;font-size:11px;min-width:18px;line-height:18px;padding:0 5px}
+.ic{display:inline-block;width:var(--sz,56px);height:var(--sz,56px);font-style:normal;line-height:0;vertical-align:middle}
+.ic svg{width:100%;height:100%;display:block}
+.types button .ic{line-height:0}
+.cases{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:6px}
+.cs{background:var(--card);border:1px solid var(--cardb);border-radius:22px;box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:6px;-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%)}
+.csh{display:flex;align-items:center;gap:10px;margin-bottom:4px}.csh>div{flex:1;min-width:0}
+.row2{display:flex;justify-content:space-between;gap:10px;font-size:14px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.cs>button{margin-top:6px;align-self:stretch}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><div><h1>包裝校稿系統</h1><p class="sub">申請 → 商開部校稿 → 研發部校稿 → 自動歸檔到年度統計；有問題可退回修改</p></div>
+<div class="bar"><label class="note">我是 <input type="text" id="me" list="dl_all" style="width:9em" maxlength="20" placeholder="輸入姓名"></label><button id="gear">⚙️ 人員設定</button></div></div>
+<datalist id="dl_all"></datalist><datalist id="dl_bn"></datalist><datalist id="dl_rd"></datalist>
+<div class="hint" id="ro" hidden>你目前是唯讀，無法申請或勾選。請向負責人要「Contributor（貢獻者）」或「Can edit（可編輯）」的分享權限。</div>
+<div class="bar" id="modebar" style="margin:6px 0 10px"></div>
+<div class="err" id="err" role="status"></div>
+
+<section id="v_apply">
+ <div id="a_pick" class="card"><h2>表單申請：請選擇校稿類型</h2><div class="types" id="types"></div></div>
+ <div id="a_form" class="card" hidden>
+  <div class="bar" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0" id="a_title"></h2><button id="a_re">← 重新選擇類型</button></div>
+  <div class="drop" id="drop">
+   <div><b>上傳或貼上包裝印刷圖檔</b></div>
+   <div class="note" style="margin:4px 0 8px">可直接 Ctrl／⌘＋V 貼上、拖曳到這裡，或按下方按鈕（JPG／PNG，單檔 20MB 內，最多 8 張）</div>
+   <label class="btn">選擇圖檔<input type="file" id="a_file" accept="image/*" multiple hidden></label>
+   <div class="pv" id="pv"></div>
+  </div>
+  <div class="grid2">
+   <label class="f"><span>校稿申請日</span><input type="date" id="a_date"></label>
+   <label class="f"><span>申請人</span><input type="text" id="a_who" list="dl_all" maxlength="20" placeholder="選擇或輸入姓名"></label>
+   <label class="f"><span>商開部校稿人</span><input type="text" id="a_bn" list="dl_bn" maxlength="20" placeholder="選擇或輸入姓名"></label>
+   <label class="f"><span>研發部校稿人</span><input type="text" id="a_rd" list="dl_rd" maxlength="20" placeholder="選擇或輸入姓名"></label>
+  </div>
+  <div class="bar"><button class="pri" id="a_ok">送出申請</button><span class="note" id="a_msg"></span></div>
+ </div>
+ <div id="a_done" class="card" hidden><h2>✅ 申請已送出</h2><div id="a_dbox"></div><div class="bar" id="a_dbtn" style="margin-top:10px"></div></div>
+</section>
+
+<section id="v_sign" hidden>
+ <div class="card">
+  <div class="bar" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">表單簽核（尚未完成的案件）</h2>
+   <label class="note">顯示 <select id="s_flt" style="width:auto;display:inline-block"><option value="mine">輪到我的</option><option value="all">全部未完成</option><option value="bn">待商開部</option><option value="rd">待研發部</option><option value="revise">待修改</option></select></label></div>
+  <div class="tw" id="s_list"></div>
+ </div>
+</section>
+
+<section id="v_track" hidden><div class="card"><h2>表單追蹤（審核中的案件）</h2><div id="t_list"></div></div></section>
+
+<section id="v_stat" hidden class="stat">
+ <div class="card">
+  <div class="bar" style="justify-content:space-between"><h2 style="margin:0">年度統計（已通過的案件）</h2>
+   <label class="note">年度 <select id="y_sel" style="width:auto;display:inline-block"></select></label></div>
+  <p id="y_tot" style="font-weight:600;margin:10px 0 0"></p><div id="y_list"></div>
+ </div>
+</section>
+
+<section id="v_set" hidden>
+ <div class="bar" style="margin-bottom:12px"><button id="set_back">← 返回</button></div>
+ <div class="card">
+  <h2>人員名單與通知信箱</h2>
+  <p class="note" style="margin-top:0">建立名單後，申請時可直接選人，系統會依名單的信箱產生提醒信。名單沒有的人，通知信會寄到測試信箱。目前測試信箱：<b id="set_test"></b></p>
+  <div class="grid2" style="grid-template-columns:1.2fr .8fr 1.6fr auto;align-items:end">
+   <label class="f" style="margin:0"><span>姓名</span><input type="text" id="p_name" maxlength="20"></label>
+   <label class="f" style="margin:0"><span>部門</span><select id="p_dept"><option value="bn">商開部</option><option value="rd">研發部</option><option value="ap">申請人／其他</option></select></label>
+   <label class="f" style="margin:0"><span>信箱</span><input type="text" id="p_mail" maxlength="80"></label>
+   <button class="pri" id="p_add">新增</button>
+  </div>
+  <div class="note" id="p_msg" style="margin:6px 0"></div>
+  <div class="tw" id="p_list"></div>
+ </div>
+</section>
+
+<section id="v_detail" hidden>
+ <div class="bar" style="margin-bottom:12px"><button id="d_back">← 返回</button><span class="note" id="d_meta"></span></div>
+ <div class="detail">
+  <div class="card sticky">
+   <div class="bar" style="margin-bottom:6px"><button id="zo" aria-label="縮小">－</button><button id="zi" aria-label="放大">＋</button><button id="zf">符合寬度</button><button id="z1">100%</button><input type="range" id="zr" min="5" max="500" value="100" style="width:130px" aria-label="縮放"><span class="note" id="zp">100%</span></div>
+   <div id="viewer"><img id="pimg" alt="包裝印刷圖檔"></div>
+   <div class="thumbs" id="thumbs"></div>
+   <p class="note" style="margin:8px 0 0">Ctrl／⌘＋滾輪可縮放，按住拖曳可平移。</p>
+  </div>
+  <div>
+   <div class="card"><div class="bar" style="justify-content:space-between"><h2 style="margin:0" id="d_title"></h2><span class="badge" id="d_badge"></span></div>
+    <div class="note" id="d_info" style="margin-top:6px"></div><div class="stepper" id="d_step"></div><ul class="log" id="d_log"></ul></div>
+   <div id="d_revise"></div>
+   <div id="d_form"></div>
+   <div id="d_msg"></div>
+   <div class="bar" id="d_admin" hidden><button class="dng" id="d_del">刪除這筆申請</button></div>
+  </div>
+ </div>
+</section>
+</div>
+
+<nav class="tabs" id="tabs" aria-label="主選單">
+ <button data-t="apply"><i>📝</i>表單申請</button>
+ <button data-t="sign"><i>✍️</i>表單簽核<b class="nb" id="nb_s" hidden></b></button>
+ <button data-t="track"><i>🔍</i>表單追蹤</button>
+ <button data-t="stat"><i>📊</i>年度統計</button>
+</nav>
+<script>
+const $=id=>document.getElementById(id);
+const ITEMS=['品牌LOGO','產品名稱','容量/淨重','產品名稱','Effects','How to use','Attention','Ingredients','公司LOGO（含全稱／地址／網址）','回收標章','R&D By allyoung','條碼','QR CODE'];
+const N=ITEMS.length;
+const TYPES=[{k:'box',n:'彩盒',i:'📦'},{k:'label',n:'瓶貼',i:'🏷️'},{k:'bottle',n:'裸瓶',i:'🧴'},{k:'insert',n:'仿單',i:'📄'}];
+const TEST_MAIL='vicky432524@gmail.com',PAGE_URL='https://claude.ai/artifact/R7pqrVo78HyB4nXsw4VYsY';
+const DEPT={bn:'商開部',rd:'研發部',ap:'申請人／其他'};
+const ICON={box:'<svg fill="none" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true" viewBox="0 0 64 64" stroke="#3f8a55"><path d="M32 10 54 19 32 28 10 19Z" fill="#f1faee"/><path d="M10 19 32 28V54L10 45Z" fill="#cfe9c8"/><path d="M54 19 32 28V54L54 45Z" fill="#a9d89f"/><path d="M43 33c0 0-5 5.5-5 8.5a5 5 0 0 0 10 0C48 38.5 43 33 43 33Z" fill="#fff"/><path d="M17 33c4 0 6.500 2 7.500 5-4 0-6.500-2-7.500-5Z" fill="#fff"/></svg>',label:'<svg fill="none" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true" viewBox="0 0 64 64" stroke="#4a7fb5"><rect x="28" y="5" width="8" height="13" rx="4" fill="#f9c9da"/><rect x="24" y="17" width="16" height="6" rx="2" fill="#dbe4f0"/><rect x="27" y="23" width="10" height="5" fill="#cfe4f7"/><rect x="17" y="27" width="30" height="31" rx="8" fill="#cfe4f7"/><rect x="17" y="37" width="30" height="14" fill="#fff" stroke="#e58fb0" stroke-dasharray="3 2"/><path d="M33 40c3 0 5 2 5 5-3 0-5-2-5-5Z" fill="#8fd0a8" stroke="#3f8a55"/><path d="M22 45h8M22 48h6" stroke="#b6c3d6"/><path d="M21 31v4" stroke="#fff"/></svg>',bottle:'<svg fill="none" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true" viewBox="0 0 64 64" stroke="#6b5fd0"><rect x="17" y="8" width="9" height="4" rx="2" fill="#e8e3fb"/><rect x="24" y="6" width="18" height="6" rx="3" fill="#e8e3fb"/><rect x="31" y="12" width="4" height="8" fill="#e8e3fb"/><rect x="26" y="19" width="14" height="5" rx="2" fill="#d9d2f6"/><rect x="20" y="24" width="26" height="34" rx="10" fill="#e2dcf6"/><path d="M20 42h26v6a10 10 0 0 1-10 10H30a10 10 0 0 1-10-10z" fill="#cdc3f1" stroke="none"/><rect x="24" y="28" width="3" height="20" rx="1.500" fill="#fff" stroke="none" opacity=".7"/></svg>',insert:'<svg fill="none" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true" viewBox="0 0 64 64" stroke="#c07a3a"><path d="M21 5h20l11 11v34a3 3 0 0 1-3 3H21z" fill="#fde0c4"/><path d="M13 11h21l11 11v35H13z" fill="#fff"/><path d="M34 11v11h11" fill="#fde0c4"/><path d="M19 30c4 0 6.500 2 7.500 5-4 0-6.500-2-7.500-5Z" fill="#8fd0a8" stroke="#3f8a55"/><path d="M19 42h20M19 47h20M19 52h13" stroke="#e3c4a0"/></svg>'};
+const ic=(k,sz)=>{const e=document.createElement('i');e.className='ic';e.innerHTML=ICON[k]||'';if(sz)e.style.setProperty('--sz',sz+'px');return e};
+const tn=k=>(TYPES.find(t=>t.k===k)||{n:k}).n;
+const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e};
+const blank=()=>({c:ITEMS.map(()=>0),n:ITEMS.map(()=>''),done:0,at:0});
+const cnt=(d,k)=>((d[k]&&d[k].c)||[]).filter(Boolean).length;
+const hm=ts=>ts?new Date(ts).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+const pad=n=>String(n).padStart(2,'0');
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const showErr=m=>{$('err').textContent=m||''};
+const lsGet=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')||d}catch(_){return d}};
+let dbH=null,assetsH=null,canWrite=null,isOwner=false,mode='local',real={db:null,assets:null,canWrite:null,isOwner:false,isEditor:false},forms=[],people=[],tab='apply',detailId=null,detailRO=false,type=null,files=[],ai=0,lastImg='',zoom=1,wt=null,me=lsGet('pkg:me','')||'',sFlt=null;
+const stageText=d=>d.stage==='bn'?'待商開部：'+d.bnWho:d.stage==='rd'?'待研發部：'+d.rdWho:d.stage==='revise'?'待修改：'+d.applicant:'已完成';
+const stageCls=d=>d.stage==='bn'?'todo':d.stage==='rd'?'doing':d.stage==='revise'?'bad':'done';
+const mine=d=>!!me&&((d.stage==='bn'&&d.bnWho===me)||(d.stage==='rd'&&d.rdWho===me)||(d.stage==='revise'&&d.applicant===me));
+const emailOf=n=>{const p=people.find(x=>x.name===n);return (p&&p.email)||TEST_MAIL};
+const L=(d,e)=>[...(d.log||[]),{t:Date.now(),e}];
+const guard=()=>{if(!dbH){showErr('需用 claude.ai 的正式頁面連結開啟並登入才能使用（預覽視窗不行）。');return false}if(canWrite===false){showErr('你目前是唯讀，請向負責人要「Contributor（貢獻者）」或「Can edit（可編輯）」權限');return false}return true};
+
+/* ---------- 通知（產生提醒信；需手動按寄出） ---------- */
+function notifyCard(d,kind){
+ const who=kind==='revise'?d.applicant:kind==='bn'?d.bnWho:d.rdWho,to=emailOf(who),dept=kind==='bn'?'商開部':kind==='rd'?'研發部':'申請人';
+ const sub=kind==='revise'?'【包裝校稿】'+tn(d.type)+'已退回，請修改後重新送審':'【包裝校稿】'+tn(d.type)+'（申請人：'+d.applicant+'）待'+dept+'校稿';
+ const body=kind==='revise'?who+' 您好：\n\n您申請的「'+tn(d.type)+'」校稿被退回修改。\n原因：'+(d.reviseNote||'')+'\n\n請修改後，到校稿系統「表單簽核」上傳修改後的圖檔並重新送審：\n'+PAGE_URL+'\n\n謝謝！':who+' 您好：\n\n有一份「'+tn(d.type)+'」包裝校稿需要您處理（第 '+(d.round||1)+' 輪）。\n申請人：'+d.applicant+'\n校稿申請日：'+d.date+'\n商開部：'+d.bnWho+'\n研發部：'+d.rdWho+'\n\n請開啟校稿系統，到「表單簽核」找到這筆申請並完成校稿：\n'+PAGE_URL+'\n\n謝謝！';
+ const text=body.replace(/\\n/g,'\n');
+ const c=el('div','card'),rec=()=>{if(dbH&&canWrite!==false)dbH.doc('forms/'+d.id).update({remindAt:Date.now()}).catch(()=>{})};
+ c.appendChild(el('h2','','通知 '+who+'（'+dept+'）'));
+ if(to===TEST_MAIL)c.appendChild(el('p','note','測試期間收件人是測試信箱 '+TEST_MAIL+'；到「⚙️ 人員設定」建立名單後會改寄給本人。'));
+ const ta=el('textarea');ta.readOnly=true;ta.rows=7;ta.value='收件人：'+to+'\n主旨：'+sub+'\n\n'+text;ta.setAttribute('aria-label','通知信內容');c.appendChild(ta);
+ const bar=el('div','bar');bar.style.marginTop='8px';
+ const a=el('a','btn pri','開啟郵件軟體寄出');a.href='mailto:'+to+'?subject='+encodeURIComponent(sub)+'&body='+encodeURIComponent(text);a.target='_blank';a.rel='noopener';a.onclick=rec;bar.appendChild(a);
+ const cp=el('button','','複製內容');cp.onclick=()=>{rec();ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}try{navigator.clipboard.writeText(ta.value);ok=true}catch(_){}cp.textContent=ok?'已複製':'請手動複製上方文字'};bar.appendChild(cp);
+ c.appendChild(bar);return c;
+}
+
+/* ---------- 分頁 ---------- */
+function go(t){
+ tab=t;detailId=null;
+ if(t==='apply'&&!$('a_done').hidden){$('a_done').hidden=true;$('a_pick').hidden=false;type=null}
+ ['apply','sign','track','stat'].forEach(k=>$('v_'+k).hidden=k!==t);['v_detail','v_set'].forEach(k=>$(k).hidden=true);
+ document.querySelectorAll('#tabs button').forEach(b=>{if(b.dataset.t===t)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+ showErr('');renderAll();window.scrollTo(0,0);
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+$('me').value=me;
+$('me').onchange=()=>{me=$('me').value.trim();try{localStorage.setItem('pkg:me',JSON.stringify(me))}catch(_){}sFlt=null;renderAll()};
+$('gear').onclick=()=>{detailId=null;['apply','sign','track','stat','detail'].forEach(k=>$('v_'+k).hidden=true);$('v_set').hidden=false;$('set_test').textContent=TEST_MAIL;renderPeople();window.scrollTo(0,0)};
+$('set_back').onclick=()=>go(tab);
+
+/* ---------- 人員名單 ---------- */
+function fillLists(){
+ const fill=(id,arr)=>{const dl=$(id);dl.innerHTML='';arr.forEach(p=>{const o=document.createElement('option');o.value=p.name;dl.appendChild(o)})};
+ const bn=people.filter(p=>p.dept==='bn'),rd=people.filter(p=>p.dept==='rd');
+ fill('dl_all',people);fill('dl_bn',bn.length?bn:people);fill('dl_rd',rd.length?rd:people);
+}
+function renderPeople(){
+ const box=$('p_list');box.innerHTML='';if(!$('p_mail').value)$('p_mail').value=TEST_MAIL;
+ if(!people.length){box.textContent='還沒有人員。新增後，申請表單的姓名欄就能直接選。';return}
+ const t=el('table'),hd=el('tr');['姓名','部門','信箱',''].forEach(h=>hd.appendChild(el('th','',h)));t.appendChild(hd);
+ people.forEach(p=>{const tr=el('tr');[p.name,DEPT[p.dept]||'',p.email||TEST_MAIL].forEach(x=>tr.appendChild(el('td','',x)));
+  const td=el('td'),b=el('button','dng','刪除');b.onclick=()=>{if(guard())dbH.doc('people/'+p.id).delete().catch(()=>showErr('刪除失敗'))};td.appendChild(b);tr.appendChild(td);t.appendChild(tr)});
+ box.appendChild(t);
+}
+$('p_add').onclick=async()=>{
+ const n=$('p_name').value.trim(),m=$('p_mail').value.trim()||TEST_MAIL,msg=$('p_msg');
+ if(!n){msg.textContent='請輸入姓名';return}
+ if(!/^\S+@\S+\.\S+$/.test(m)){msg.textContent='信箱格式不正確';return}
+ if(people.some(p=>p.name===n)){msg.textContent='名單裡已有同名的人';return}
+ if(!guard())return;
+ try{await dbH.doc('people/p'+Date.now().toString(36)+Math.random().toString(36).slice(2,4)).set({name:n,dept:$('p_dept').value,email:m,created:Date.now()});$('p_name').value='';msg.textContent='已新增'}catch(e){msg.textContent='新增失敗，請再試一次'}
+};
+
+/* ---------- 表單申請 ---------- */
+TYPES.forEach(t=>{const b=el('button');b.appendChild(ic(t.k));b.appendChild(document.createTextNode(t.n));b.onclick=()=>{type=t;files=[];drawPv();$('a_title').textContent='表單申請：'+t.n;$('a_pick').hidden=true;$('a_done').hidden=true;$('a_form').hidden=false;
+ const m=lsGet('pkg:last',{});$('a_date').value=todayStr();$('a_who').value=me||m.who||'';$('a_bn').value=m.bn||'';$('a_rd').value=m.rd||'';$('a_msg').textContent=''};$('types').appendChild(b)});
+$('a_re').onclick=()=>{$('a_form').hidden=true;$('a_pick').hidden=false;type=null};
+function drawPv(){const pv=$('pv');pv.innerHTML='';files.forEach((f,i)=>{const fg=el('figure'),im=el('img');im.src=f.url;im.alt=f.name;const x=el('button','','✕');x.setAttribute('aria-label','移除 '+f.name);x.onclick=()=>{files.splice(i,1);drawPv()};fg.append(im,x);pv.appendChild(fg)})}
+function addFiles(list){
+ [...list].forEach(f=>{
+  if(!f.type.startsWith('image/')){$('a_msg').textContent='目前只支援圖片檔（JPG／PNG），PDF 請先轉成圖片';return}
+  if(files.length>=8){$('a_msg').textContent='最多 8 張圖';return}
+  const rd=new FileReader();rd.onload=()=>{files.push({file:f,name:f.name,url:rd.result});drawPv();$('a_msg').textContent=''};rd.readAsDataURL(f);
+ });
+}
+$('a_file').onchange=e=>{addFiles(e.target.files);e.target.value=''};
+document.addEventListener('paste',e=>{if(tab!=='apply'||$('a_form').hidden)return;const fs=[...(e.clipboardData&&e.clipboardData.files||[])].filter(f=>f.type.startsWith('image/'));if(fs.length)addFiles(fs)});
+const dz=$('drop');['dragover','dragenter'].forEach(n=>dz.addEventListener(n,e=>{e.preventDefault();dz.classList.add('on')}));
+['dragleave','drop'].forEach(n=>dz.addEventListener(n,e=>{e.preventDefault();dz.classList.remove('on');if(n==='drop')addFiles(e.dataTransfer.files)}));
+const UPERR={too_large:'有圖檔超過 20MB',unsupported_type:'有不支援的圖檔格式',rate_limited:'上傳太頻繁，請稍後再試',not_uploader:'你沒有上傳權限'};
+async function uploadAll(fs,m){const ids=[];for(let i=0;i<fs.length;i++){m.textContent='上傳圖檔 '+(i+1)+'／'+fs.length+'…';ids.push((await assetsH.upload(fs[i])).id)}return ids}
+$('a_ok').onclick=async()=>{
+ const m=$('a_msg'),v=k=>$(k).value.trim(),who=v('a_who'),bn=v('a_bn'),rd=v('a_rd'),date=$('a_date').value;
+ if(!files.length){m.textContent='請上傳或貼上包裝印刷圖檔';return}
+ if(!date||!who||!bn||!rd){m.textContent='請填寫校稿申請日、申請人、商開部、研發部';return}
+ if(!assetsH){m.textContent='目前沒有上傳權限，請用正式頁面連結開啟並登入';return}
+ if(!guard())return;
+ $('a_ok').disabled=true;
+ try{
+  const ids=await uploadAll(files.map(f=>f.file),m),id='f'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),now=Date.now();
+  const d={type:type.k,imgIds:ids,date,applicant:who,bnWho:bn,rdWho:rd,stage:'bn',round:1,created:now,upd:now,bn:blank(),rd:blank(),log:[{t:now,e:who+' 送出申請'}]};
+  await dbH.doc('forms/'+id).set(d);
+  try{localStorage.setItem('pkg:last',JSON.stringify({who,bn,rd}))}catch(_){}
+  m.textContent='';d.id=id;$('a_form').hidden=true;$('a_done').hidden=false;
+  const bx=$('a_dbox');bx.innerHTML='';bx.appendChild(el('p','','「'+type.n+'」已送出，接下來由商開部 '+bn+' 校稿，完成後自動轉交研發部 '+rd+'。'));bx.appendChild(notifyCard(d,'bn'));
+  const bt=$('a_dbtn');bt.innerHTML='';
+  const again=el('button','','再申請一筆');again.onclick=()=>{$('a_done').hidden=true;$('a_pick').hidden=false;type=null};bt.appendChild(again);
+  const tr=el('button','','查看進度');tr.onclick=()=>go('track');bt.appendChild(tr);
+ }catch(e){m.textContent='送出失敗：'+(UPERR[e&&e.code]||(e&&e.message?String(e.message).slice(0,60):'請再試一次'))}
+ finally{$('a_ok').disabled=false}
+};
+
+/* ---------- 清單 ---------- */
+const open_=()=>forms.filter(f=>f.stage!=='done').sort((a,b)=>a.created-b.created);
+function renderSign(){
+ const sel=$('s_flt');if(sFlt===null)sFlt=me?'mine':'all';sel.value=sFlt;
+ let f=sFlt;const box=$('s_list');box.innerHTML='';
+ if(f==='mine'&&!me){box.appendChild(el('p','note','請先在右上角輸入「我是」的姓名，才能只看輪到你的案件；目前顯示全部。'));f='all'}
+ const rows=open_().filter(d=>f==='all'||(f==='mine'?mine(d):d.stage===f));
+ if(!rows.length){box.appendChild(el('p','',open_().length?'沒有符合條件的案件。':'目前沒有待簽核的案件 🎉'));return}
+ const t=el('table'),hd=el('tr');['類型','申請日','申請人','目前關卡','商開部','研發部',''].forEach(h=>hd.appendChild(el('th','',h)));t.appendChild(hd);
+ rows.forEach(d=>{
+  const tr=el('tr');{const t0=el('td');t0.appendChild(ic(d.type,26));t0.appendChild(document.createTextNode(' '+tn(d.type)));tr.appendChild(t0);[d.date,d.applicant].forEach(x=>tr.appendChild(el('td','',x)))}
+  const td=el('td');td.appendChild(el('span','badge '+stageCls(d),stageText(d)));if(mine(d))td.appendChild(el('span','badge todo','我'));tr.appendChild(td);
+  tr.appendChild(el('td','',d.bnWho+'（'+(d.bn.done?'已送出':cnt(d,'bn')+'／'+N)+'）'));tr.appendChild(el('td','',d.rdWho+'（'+(d.rd.done?'已送出':cnt(d,'rd')+'／'+N)+'）'));
+  const b=el('td'),ob=el('button',mine(d)?'pri':'',d.stage==='revise'?'進入修改':'進入簽核');ob.onclick=()=>openDetail(d.id,false);b.appendChild(ob);tr.appendChild(b);t.appendChild(tr);
+ });
+ box.appendChild(t);
+}
+$('s_flt').onchange=()=>{sFlt=$('s_flt').value;renderSign()};
+function stepper(d,box){
+ box.innerHTML='';const cur=d.stage==='revise'?0:d.stage==='bn'?1:d.stage==='rd'?2:3;
+ ['申請／修改','商開部校稿','研發部校稿','完成'].forEach((s,i)=>{if(i)box.appendChild(el('i'));const sp=el('span',i<cur||d.stage==='done'?'ok':i===cur?'cur':'',s);sp.dataset.n=i+1;box.appendChild(sp)});
+}
+function renderTrack(){
+ const rows=open_(),box=$('t_list');box.innerHTML='';
+ if(!rows.length){box.textContent='目前沒有審核中的案件。已通過的案件請到「年度統計」查看。';return}
+ rows.forEach(d=>{
+  const c=el('div','mh'),h=el('div','h',tn(d.type)+'｜申請人 '+d.applicant+'｜申請日 '+d.date+'｜第 '+(d.round||1)+' 輪');h.insertBefore(ic(d.type,28),h.firstChild);c.appendChild(h);
+  const b=el('div');b.style.padding='10px 14px';const st=el('div','stepper');stepper(d,st);b.appendChild(st);
+  if(d.stage==='revise')b.appendChild(el('div','warnbox','已退回修改，等待 '+d.applicant+' 重新送審。原因：'+(d.reviseNote||'')));
+  b.appendChild(el('div','note','商開部 '+d.bnWho+'：'+(d.bn.done?'已送出（'+hm(d.bn.at)+'）':cnt(d,'bn')+'／'+N+' 項')+'　研發部 '+d.rdWho+'：'+(d.rd.done?'已送出':d.stage==='rd'?cnt(d,'rd')+'／'+N+' 項':'尚未輪到')));
+  if(d.remindAt)b.appendChild(el('div','note','最近一次提醒：'+hm(d.remindAt)));
+  const bar=el('div','bar');bar.style.marginTop='8px';const v=el('button','','查看內容');v.onclick=()=>openDetail(d.id,true);bar.appendChild(v);b.appendChild(bar);c.appendChild(b);box.appendChild(c);
+ });
+}
+function renderStat(){
+ const done=forms.filter(f=>f.stage==='done'&&f.doneAt),cy=new Date().getFullYear();
+ const years=[...new Set([cy,...done.map(f=>new Date(f.doneAt).getFullYear())])].sort((a,b)=>b-a),sel=$('y_sel'),keep=sel.value||String(cy);
+ sel.innerHTML='';years.forEach(y=>{const o=el('option','',y+' 年');o.value=y;sel.appendChild(o)});sel.value=years.includes(+keep)?keep:String(cy);
+ const Y=+sel.value,ys=done.filter(f=>new Date(f.doneAt).getFullYear()===Y);
+ const line=a=>TYPES.map(t=>t.n+'：'+a.filter(f=>f.type===t.k).length+'件').join('／');
+ $('y_tot').textContent=Y+' 年度合計｜'+line(ys)+'（共 '+ys.length+' 件）';
+ const box=$('y_list');box.innerHTML='';
+ if(!ys.length){box.appendChild(el('p','note','這一年還沒有通過的案件。'));return}
+ for(let m=12;m>=1;m--){
+  const ms=ys.filter(f=>new Date(f.doneAt).getMonth()+1===m).sort((a,b)=>b.doneAt-a.doneAt);if(!ms.length)continue;
+  box.appendChild(el('h3','',Y+' 年 '+m+' 月｜'+line(ms)+'（共 '+ms.length+' 件）'));
+  const gr=el('div','cases');
+  ms.forEach(d=>{
+   const c=el('div','cs'),h=el('div','csh');h.appendChild(ic(d.type,46));
+   const tt=el('div');tt.appendChild(el('b','',tn(d.type)));tt.appendChild(el('div','note','申請人 '+d.applicant));h.appendChild(tt);h.appendChild(el('span','badge done','已通過'));c.appendChild(h);
+   [['商開部',d.bnWho],['研發部',d.rdWho],['申請日',d.date],['完成日',hm(d.doneAt)],['校稿輪數',(d.round||1)+' 輪']].forEach(([k,v])=>{const r=el('div','row2');r.appendChild(el('span','note',k));r.appendChild(el('span','',v));c.appendChild(r)});
+   const v=el('button','','查看內容');v.onclick=()=>openDetail(d.id,true);c.appendChild(v);gr.appendChild(c);
+  });
+  box.appendChild(gr);
+ }
+}
+$('y_sel').onchange=renderStat;
+
+/* ---------- 檢視器 ---------- */
+const pimg=$('pimg'),viewer=$('viewer');
+function setZoom(z){
+ if(!pimg.naturalWidth)return;z=Math.max(.05,Math.min(5,z));
+ const cx=(viewer.scrollLeft+viewer.clientWidth/2)/Math.max(1,pimg.width),cy=(viewer.scrollTop+viewer.clientHeight/2)/Math.max(1,pimg.height);
+ zoom=z;pimg.style.width=Math.round(pimg.naturalWidth*z)+'px';
+ viewer.scrollLeft=cx*pimg.width-viewer.clientWidth/2;viewer.scrollTop=cy*pimg.height-viewer.clientHeight/2;
+ $('zr').value=Math.round(z*100);$('zp').textContent=Math.round(z*100)+'%';
+}
+const fit=()=>setZoom(Math.min(1.5,(viewer.clientWidth-4)/pimg.naturalWidth));
+pimg.onload=fit;
+$('zi').onclick=()=>setZoom(zoom*1.25);$('zo').onclick=()=>setZoom(zoom/1.25);$('zf').onclick=fit;$('z1').onclick=()=>setZoom(1);
+$('zr').oninput=e=>setZoom(e.target.value/100);
+viewer.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();setZoom(zoom*(e.deltaY<0?1.1:1/1.1))}},{passive:false});
+let drag=null;
+viewer.addEventListener('pointerdown',e=>{if(e.pointerType==='touch')return;drag={x:e.clientX,y:e.clientY,l:viewer.scrollLeft,t:viewer.scrollTop};viewer.setPointerCapture(e.pointerId);viewer.style.cursor='grabbing'});
+viewer.addEventListener('pointermove',e=>{if(!drag)return;viewer.scrollLeft=drag.l-(e.clientX-drag.x);viewer.scrollTop=drag.t-(e.clientY-drag.y)});
+const endDrag=()=>{drag=null;viewer.style.cursor='grab'};viewer.addEventListener('pointerup',endDrag);viewer.addEventListener('pointercancel',endDrag);
+function showImg(d){
+ const ids=d.imgIds||[];if(!ids.length)return;if(ai>=ids.length)ai=0;
+ const u=imgUrl(ids[ai]);if(u!==lastImg){lastImg=u;pimg.src=u}
+ const th=$('thumbs');th.innerHTML='';
+ if(ids.length>1)ids.forEach((_,j)=>{const b=el('button','','圖 '+(j+1));b.setAttribute('aria-pressed',j===ai);b.onclick=()=>{ai=j;showImg(d)};th.appendChild(b)});
+}
+
+/* ---------- 簽核畫面 ---------- */
+let isEditor=false;
+const roleText=()=>mode==='local'?'測試模式（本機）':isOwner?'擁有者':isEditor?'編輯者（Can edit）':canWrite===true?'可填寫（Contributor）':canWrite===false?'唯讀（按了不會儲存）':'未知（可能是組織外的帳號）';
+let dirtyUntil=0,rt=null;
+function saveSec(d,k){
+ clearTimeout(wt);dirtyUntil=Date.now()+3000;
+ wt=setTimeout(()=>{dbH.doc('forms/'+d.id).update({[k]:d[k],upd:Date.now()}).then(()=>{dirtyUntil=Date.now()+1200}).catch(e=>{dirtyUntil=0;if(e&&(e.code==='invalid_argument'||e.code==='not_granted')){canWrite=false;showErr('你的帳號只有檢視權限，剛才按的結果沒有儲存。請向負責人要「Contributor」或「Can edit」權限。');renderAll()}else showErr('儲存失敗：'+(e&&e.message?String(e.message).slice(0,60):'請稍後再試'))})},150);
+}
+async function submitStage(d,k){
+ const o=d[k],dn=k==='bn'?'商開部':'研發部',who=k==='bn'?d.bnWho:d.rdWho;
+ const un=o.c.filter(v=>!v).length,bad=o.c.reduce((a,v,i)=>v===2?a.concat(i):a,[]);
+ if(un){showErr('還有 '+un+' 項沒有判定，請全部選擇「通過」或「有問題」');return}
+ if(bad.some(i=>!(o.n[i]||'').trim())){showErr('標示「有問題」的項目，請在備註寫明要怎麼修改');return}
+ if(!guard())return;showErr('');clearTimeout(wt);dirtyUntil=0;
+ const now=Date.now(),ud={upd:now};ud[k]={...o,done:1,at:now};
+ try{
+  const box=$('d_msg');box.innerHTML='';
+  if(bad.length){
+   ud.stage='revise';ud.returnTo=k;ud.reviseBy=who;ud.reviseAt=now;ud.reviseNote=bad.map(i=>(i+1)+' '+ITEMS[i]+'：'+o.n[i]).join('；').slice(0,500);ud.log=L(d,dn+' '+who+' 退回修改（'+bad.length+' 項有問題）');
+   await dbH.doc('forms/'+d.id).update(ud);
+   const c=el('div','card');c.appendChild(el('h2','','↩️ 已退回給申請人修改'));c.appendChild(notifyCard({...d,...ud},'revise'));box.appendChild(c);
+  }else if(k==='bn'){
+   ud.stage='rd';ud.log=L(d,'商開部 '+who+' 校稿通過，轉交研發部');
+   await dbH.doc('forms/'+d.id).update(ud);
+   const c=el('div','card');c.appendChild(el('h2','','✅ 商開部校稿已送出，已轉交研發部 '+d.rdWho));c.appendChild(notifyCard({...d,...ud},'rd'));box.appendChild(c);
+  }else{
+   ud.stage='done';ud.doneAt=now;const dt=new Date(now);ud.ym=dt.getFullYear()+'-'+pad(dt.getMonth()+1);ud.log=L(d,'研發部 '+who+' 校稿通過，全員簽核完成');
+   await dbH.doc('forms/'+d.id).update(ud);
+   const c=el('div','card');c.appendChild(el('h2','','🎉 全員完成簽核'));c.appendChild(el('p','','這筆申請已自動消單，並列入年度統計。'));box.appendChild(c);
+  }
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+ }catch(e){showErr('送出失敗：'+(e&&(e.code==='invalid_argument'||e.code==='not_granted')?'你的帳號只有檢視權限，無法送出，請向負責人要「Contributor」或「Can edit」':e&&e.message?String(e.message).slice(0,60):'請再試一次'))}
+}
+function reviseBox(d){
+ const box=$('d_revise');box.innerHTML='';if(d.stage!=='revise')return;
+ const w=el('div','warnbox');w.appendChild(el('b','','已退回修改')); w.appendChild(el('div','','退回人：'+(d.reviseBy||'')+'（'+hm(d.reviseAt)+'）'));w.appendChild(el('div','','原因：'+(d.reviseNote||'')));
+ if(!detailRO){
+  const lb=el('label','f');lb.style.margin='10px 0 6px';lb.appendChild(el('span','','上傳修改後的圖檔（可多張；不上傳則沿用原圖檔）'));const fi=el('input');fi.type='file';fi.accept='image/*';fi.multiple=true;lb.appendChild(fi);w.appendChild(lb);
+  const bar=el('div','bar'),ok=el('button','pri','修改完成，重新送審'),msg=el('span','note');bar.append(ok,msg);w.appendChild(bar);
+  ok.onclick=async()=>{
+   const fs=[...fi.files];if(fs.some(f=>!f.type.startsWith('image/'))){msg.textContent='只支援圖片檔';return}
+   if(fs.length&&!assetsH){msg.textContent='目前沒有上傳權限';return}if(!guard())return;clearTimeout(wt);dirtyUntil=0;ok.disabled=true;
+   try{
+    const ids=fs.length?await uploadAll(fs,msg):d.imgIds,ud={stage:'bn',round:(d.round||1)+1,bn:blank(),rd:blank(),imgIds:ids,oldImgIds:fs.length?[...(d.oldImgIds||[]),...(d.imgIds||[])]:(d.oldImgIds||[]),reviseNote:'',upd:Date.now(),log:L(d,(me||d.applicant)+' 修改完成，重新送審（第 '+((d.round||1)+1)+' 輪）')};
+    await dbH.doc('forms/'+d.id).update(ud);ai=0;lastImg='';
+    const m=$('d_msg');m.innerHTML='';const c=el('div','card');c.appendChild(el('h2','','✅ 已重新送審，轉交商開部 '+d.bnWho));c.appendChild(notifyCard({...d,...ud},'bn'));m.appendChild(c);
+   }catch(e){msg.textContent='送出失敗：'+(UPERR[e&&e.code]||(e&&e.message?String(e.message).slice(0,60):'請再試一次'))}
+   finally{ok.disabled=false}
+  };
+ }
+ box.appendChild(w);
+}
+function renderDetail(){
+ const d=forms.find(f=>f.id===detailId);
+ if(!d){go(tab);showErr('這筆申請已不存在');return}
+ $('d_title').innerHTML='';$('d_title').append(ic(d.type,34),document.createTextNode(' '+tn(d.type)));const b=$('d_badge');b.className='badge '+stageCls(d);b.textContent=d.stage==='done'?'已完成':d.stage==='revise'?'待修改':d.stage==='bn'?'待商開部':'待研發部';
+ $('d_info').textContent='申請人 '+d.applicant+'｜申請日 '+d.date+'｜商開部 '+d.bnWho+'｜研發部 '+d.rdWho+'｜第 '+(d.round||1)+' 輪'+(d.doneAt?'｜完成 '+hm(d.doneAt):'');
+ $('d_meta').textContent='最後更新 '+hm(d.upd||d.created)+'｜你的權限：'+roleText();stepper(d,$('d_step'));
+ const lg=$('d_log');lg.innerHTML='';(d.log||[]).slice(-8).forEach(x=>lg.appendChild(el('li','',hm(x.t)+'　'+x.e)));
+ $('d_admin').hidden=!isOwner;showImg(d);reviseBox(d);
+ const box=$('d_form');box.innerHTML='';
+ {const why=detailRO?'目前是「查看內容」模式，只能看，不能修改。要校稿請到「表單簽核」進入。':canWrite===false?'':d.stage==='done'?'這筆申請已完成簽核，只能查看。':d.stage==='revise'?'這筆申請已退回，要等申請人修改並重新送審。':'目前輪到：'+(d.stage==='bn'?'商開部 '+d.bnWho:'研發部 '+d.rdWho)+'。只有這一關可以按「通過／有問題」，另一關要等輪到才能操作。';if(why)box.appendChild(el('div','hint',why))}
+ if(canWrite===null&&!detailRO&&d.stage!=='done'&&d.stage!=='revise')box.appendChild(el('div','hint','系統無法確認你的帳號可以寫入。如果按了「通過」沒有保留，代表只有檢視權限，請向負責人要「Contributor」或「Can edit」。'));
+ [['bn','商開部',d.bnWho],['rd','研發部',d.rdWho]].forEach(([k,dn,who])=>{
+  const o=d[k],edit=!detailRO&&canWrite!==false&&d.stage===k,card=el('div','rv'+(edit?' act':'')),h=el('header');
+  h.appendChild(el('b','',dn+'校稿人：'+who));const c=el('span','badge todo');h.appendChild(c);
+  if(edit)h.appendChild(el('span','badge todo','目前輪到這裡'));else if(!o.done&&d.stage!=='done')h.appendChild(el('span','note',d.stage==='revise'?'（已退回，等待申請人修改）':'（尚未輪到）'));
+  card.appendChild(h);
+  const upd=()=>{const n=o.c.filter(Boolean).length,bd=o.c.filter(v=>v===2).length;c.textContent=(o.done?'已送出 ':'')+n+'／'+N+(bd?'・'+bd+' 項有問題':'');c.className='badge '+(bd?'bad':n===N?'done':n?'doing':'todo')};
+  ITEMS.forEach((nm,i)=>{
+   const r=el('div','it');r.appendChild(el('span','no',pad(i+1)));r.appendChild(el('span','',nm));
+   const sg=el('span','seg'),b1=el('button','','通過'),b2=el('button','','有問題');
+   const paint=()=>{b1.className=o.c[i]===1?'on1':'';b2.className=o.c[i]===2?'on2':'';b1.setAttribute('aria-pressed',o.c[i]===1);b2.setAttribute('aria-pressed',o.c[i]===2)};
+   const set=v=>{if(!edit)return;o.c[i]=o.c[i]===v?0:v;paint();upd();saveSec(d,k)};
+   b1.onclick=()=>set(1);b2.onclick=()=>set(2);b1.disabled=b2.disabled=!edit;paint();sg.append(b1,b2);r.appendChild(sg);
+   const nt=el('input');nt.type='text';nt.value=o.n[i]||'';nt.maxLength=120;nt.placeholder=edit?'備註（有問題請寫修改內容）':'';nt.readOnly=!edit;nt.setAttribute('aria-label',dn+nm+'備註');nt.oninput=()=>{o.n[i]=nt.value;saveSec(d,k)};r.appendChild(nt);
+   card.appendChild(r);
+  });
+  upd();
+  if(edit){
+   const f=el('div','bar');f.style.padding='10px 12px';
+   const all=el('button','','其餘全部標示通過');all.onclick=()=>{o.c=o.c.map(v=>v||1);saveSec(d,k);renderDetail()};f.appendChild(all);
+   const sb=el('button','pri','');const lab=()=>{const bd=o.c.filter(v=>v===2).length;sb.textContent=bd?'送出並退回申請人修改':k==='bn'?'送出商開部校稿，轉交研發部':'送出研發部校稿，完成簽核'};lab();
+   sb.onclick=()=>submitStage(d,k);f.appendChild(sb);f.appendChild(el('span','note','13 項都要選「通過」或「有問題」'));card.appendChild(f);
+  }
+  box.appendChild(card);
+ });
+ if(canWrite===false&&!detailRO)box.insertBefore(el('div','hint','你目前是唯讀，無法按「通過／有問題」；請向負責人要「Contributor（貢獻者）」或「Can edit（可編輯）」的分享權限。'),box.firstChild);
+}
+function openDetail(id,ro){
+ detailId=id;detailRO=ro;ai=0;lastImg='';showErr('');$('d_msg').innerHTML='';
+ ['apply','sign','track','stat','set'].forEach(k=>$('v_'+k).hidden=true);$('v_detail').hidden=false;window.scrollTo(0,0);renderDetail();
+}
+$('d_back').onclick=()=>go(tab);
+let arm=0;
+$('d_del').onclick=async()=>{
+ const b=$('d_del');if(!arm){arm=1;b.textContent='再按一次確認刪除';setTimeout(()=>{arm=0;b.textContent='刪除這筆申請'},3000);return}
+ const d=forms.find(f=>f.id===detailId);if(!d)return;
+ try{await dbH.doc('forms/'+d.id).delete();[...(d.imgIds||[]),...(d.oldImgIds||[])].forEach(x=>{if(assetsH)assetsH.delete(x).catch(()=>{})});go(tab)}catch(e){showErr('刪除失敗')}
+ arm=0;b.textContent='刪除這筆申請';
+};
+
+/* ---------- 總渲染與啟動 ---------- */
+function renderAll(){
+ const n=me?open_().filter(mine).length:open_().length,nb=$('nb_s');nb.hidden=!n;nb.textContent=n;
+ $('ro').hidden=canWrite!==false;
+ if(!$('v_set').hidden){renderPeople();return}
+ if(detailId&&!$('v_detail').hidden){const ae=document.activeElement;if(ae&&$('v_detail').contains(ae)&&(ae.type==='text'||ae.type==='file'))return;if(Date.now()<dirtyUntil){clearTimeout(rt);rt=setTimeout(renderAll,dirtyUntil-Date.now()+60);return}renderDetail();return}
+ if(tab==='sign')renderSign();else if(tab==='track')renderTrack();else if(tab==='stat')renderStat();
+}
+/* ---------- 本機測試模式（任何人、任何帳號都能完整操作；資料只存在自己的瀏覽器） ---------- */
+const jc=o=>JSON.parse(JSON.stringify(o));
+const localDB=(()=>{
+ const load=c=>{try{return JSON.parse(localStorage.getItem('pkg:local:'+c)||'{}')}catch(_){return {}}};
+ const save=(c,o)=>{try{localStorage.setItem('pkg:local:'+c,JSON.stringify(o))}catch(e){const er=new Error('本機儲存空間不足，請按「清除測試資料」');er.code='quota';throw er}};
+ const subs=[];const fire=()=>setTimeout(()=>subs.slice().forEach(f=>f()),0);
+ return{
+  collection:c=>{const q={f:'created',d:'asc',orderBy(f,d){q.f=f;q.d=d||'asc';return q},limit(){return q},onSnapshot(cb){
+    const run=()=>{const arr=Object.entries(load(c)).map(([id,v])=>({id,data:()=>jc(v)}));arr.sort((a,b)=>{const x=a.data()[q.f]||0,y=b.data()[q.f]||0;return q.d==='desc'?y-x:x-y});cb({docs:arr})};
+    subs.push(run);run();return()=>{const i=subs.indexOf(run);if(i>=0)subs.splice(i,1)}}};return q},
+  doc:p=>{const [c,id]=p.split('/');return{
+   set:async d=>{const o=load(c);o[id]=jc(d);save(c,o);fire()},
+   update:async d=>{const o=load(c);if(!o[id])throw new Error('找不到這筆資料');Object.assign(o[id],jc(d));save(c,o);fire()},
+   delete:async()=>{const o=load(c);delete o[id];save(c,o);fire()}}}
+ };
+})();
+function shrink(f){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej(new Error('圖檔無法讀取'));r.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('圖檔無法讀取'));im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.82))};im.src=r.result};r.readAsDataURL(f)})}
+const localAssets={
+ upload:async f=>{const url=await shrink(f),id='L'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);try{localStorage.setItem('pkg:img:'+id,url)}catch(e){const er=new Error('本機儲存空間不足，請按「清除測試資料」或改用較小的圖檔');er.code='quota';throw er}return{id}},
+ delete:async id=>{try{localStorage.removeItem('pkg:img:'+id)}catch(_){}}
+};
+const imgUrl=id=>String(id)[0]==='L'?(localStorage.getItem('pkg:img:'+id)||''):'/_blob/'+id;
+let unF=null,unP=null;
+function startData(){
+ if(unF)try{unF()}catch(_){}if(unP)try{unP()}catch(_){}
+ forms=[];people=[];
+ unF=dbH.collection('forms').orderBy('created','desc').limit(1000).onSnapshot(q=>{const nf=q.docs.map(d=>({id:d.id,...d.data()}));if(detailId&&Date.now()<dirtyUntil){const keep=forms.find(x=>x.id===detailId),i=nf.findIndex(x=>x.id===detailId);if(keep&&i>=0)nf[i]=keep}forms=nf;renderAll()},e=>showErr('資料讀取失敗：'+(e&&e.message?String(e.message).slice(0,60):'')));
+ unP=dbH.collection('people').orderBy('created').limit(300).onSnapshot(q=>{people=q.docs.map(d=>({id:d.id,...d.data()}));fillLists();renderAll()},()=>{});
+}
+function renderModeUI(){
+ const b=$('modebar');b.innerHTML='';
+ b.appendChild(el('span','badge '+(mode==='local'?'doing':'done'),mode==='local'?'測試模式：資料只存在這個瀏覽器':'共享模式：資料與其他人同步'));
+ const canShare=!!(real.db&&real.canWrite===true);
+ if(mode==='local'){
+  b.appendChild(el('span','note',canShare?'可以一個人完整跑完整個流程。':'你的帳號沒有共享寫入權限，所以自動用測試模式；可以一個人完整跑完整個流程，但不同帳號看不到彼此的案件。'));
+  let arm=0;const c=el('button','dng','清除測試資料');c.onclick=()=>{if(!arm){arm=1;c.textContent='再按一次確認清除';setTimeout(()=>{arm=0;c.textContent='清除測試資料'},3000);return}
+   try{Object.keys(localStorage).filter(k=>k.startsWith('pkg:local:')||k.startsWith('pkg:img:')).forEach(k=>localStorage.removeItem(k))}catch(_){}
+   arm=0;c.textContent='清除測試資料';detailId=null;go('apply');startData()};b.appendChild(c);
+  if(canShare){const sw=el('button','','切換到共享模式');sw.onclick=()=>applyMode('shared');b.appendChild(sw)}
+ }else{const sw=el('button','','切換到測試模式（本機）');sw.onclick=()=>applyMode('local');b.appendChild(sw)}
+}
+function applyMode(m){
+ mode=m;
+ if(m==='shared'){dbH=real.db;assetsH=real.assets;canWrite=real.canWrite;isOwner=real.isOwner;isEditor=real.isEditor}
+ else{dbH=localDB;assetsH=localAssets;canWrite=true;isOwner=true;isEditor=true}
+ try{localStorage.setItem('pkg:mode',m)}catch(_){}
+ detailId=null;renderModeUI();startData();go(tab);
+}
+(async()=>{
+ let rdb=null,ras=null;
+ try{rdb=window.claude?await claude.use('db'):null}catch(_){}
+ try{ras=window.claude?await claude.use('assets'):null}catch(_){}
+ real={db:rdb,assets:ras,canWrite:null,isOwner:false,isEditor:false};
+ try{const u=window.claude?await claude.use('user'):null;if(u){real.isOwner=await u.isOwner();real.isEditor=await u.canEdit();real.canWrite=await u.can('data.write')}}catch(_){}
+ let pref=null;try{pref=localStorage.getItem('pkg:mode')}catch(_){}
+ applyMode(real.db&&real.canWrite===true&&pref!=='local'?'shared':'local');
+})();
+go('apply');
+</script>
+</body>
+</html>
